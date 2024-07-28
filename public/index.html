@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="Formulario para automatizar publicaciones en Facebook."
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Facebook scraper</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="form-container">
+        <div class="overlay"></div>
+        <div class="form-content">
+          <div class="form-title">
+            <h1 class="form-title__main">Automatiza tus publicaciones de</h1>
+            <h1 class="form-title__sub">Facebook</h1>
+          </div>
+
+          <form class="form" id="automationForm">
+            <div class="form__group">
+              <input
+                class="form__input"
+                type="email"
+                id="email"
+                name="email"
+                required
+                placeholder="Correo Electrónico"
+              />
+            </div>
+
+            <div class="form__group">
+              <input
+                class="form__input password"
+                type="password"
+                name="password"
+                required
+                placeholder="Contraseña"
+              />
+              <button type="button" class="button--password togglePassword">
+                Mostrar Contraseña
+              </button>
+            </div>
+
+            <div class="form__group">
+              <input
+                class="form__input"
+                type="url"
+                id="urlPost"
+                name="urlPost"
+                placeholder="URL de la Publicación"
+                required
+              />
+            </div>
+
+            <div class="form__group">
+              <textarea
+                class="form__textarea"
+                id="message"
+                name="message"
+                placeholder="Escribe tu mensaje"
+                required
+              ></textarea>
+            </div>
+
+            <div class="form__group">
+              <input
+                class="form__input"
+                type="number"
+                id="postCount"
+                name="postCount"
+                placeholder="Número de Publicaciones"
+                required
+                min="1"
+              />
+            </div>
+            <button class="button button--add" type="submit">
+              Añadir Cuenta
+            </button>
+          </form>
+
+          <button class="button button--share" id="sharePostsButton">
+            Compartir publicaciones
+          </button>
+        </div>
+      </div>
+
+      <div class="user-list">
+        <h2 class="user-list__title">Cuentas Registradas</h2>
+        <ul id="users" class="user-list__items"></ul>
+      </div>
+    </div>
+
+    <!-- Modal para editar usuarios -->
+    <div id="editModal" class="modal">
+      <div class="modal-content">
+        <span id="closeModal" class="close">&times;</span>
+        <div class="form-title">
+          <h2 class="form-title__main">Editar Cuenta</h2>
+        </div>
+        <form id="editForm" class="form">
+          <div class="form__group">
+            <input
+              class="form__input"
+              type="email"
+              id="editEmail"
+              name="email"
+              placeholder="Correo Electrónico"
+              required
+            />
+          </div>
+
+          <div class="form__group">
+            <input
+              class="form__input password"
+              id="editPassword"
+              name="password"
+              placeholder="Contraseña"
+              required
+            />
+            <button type="button" class="button--password togglePassword">
+              Mostrar Contraseña
+            </button>
+          </div>
+
+          <div class="form__group">
+            <input
+              class="form__input"
+              type="url"
+              id="editUrlPost"
+              name="urlPost"
+              placeholder="URL de la Publicación"
+              required
+            />
+          </div>
+
+          <div class="form__group">
+            <textarea
+              class="form__textarea"
+              id="editMessage"
+              name="message"
+              placeholder="Escribe tu mensaje"
+              required
+            ></textarea>
+          </div>
+
+          <div class="form__group">
+            <input
+              class="form__input"
+              type="number"
+              id="editPostCount"
+              name="postCount"
+              placeholder="Número de Publicaciones"
+              min="1"
+              required
+            />
+          </div>
+
+          <input type="hidden" id="editOldEmail" name="oldEmail" />
+
+          <button class="button button--save" type="submit">
+            Guardar Cambios
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script src="./js/automation.js"></script>
+  </body>
+</html>
