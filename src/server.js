@@ -19,7 +19,7 @@ const readConfigFile = async () => {
 };
 
 const writeConfigFile = async (config) => {
-  await fs.writeFile(configPath, JSON.stringify(config, null, 2));
+  await fs.writeFile(configPath, JSON.stringify(config, null, 2)); // parametro 2 para la sangria y mejorar la legibilidad de lectura.
 };
 
 //Endpoint para añadir un usuario

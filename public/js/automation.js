@@ -1,13 +1,14 @@
 /**---------VARIABLES---------- */
 const automationForm = document.querySelector("#automationForm");
 const sharePostsButton = document.querySelector("#sharePostsButton");
+
 const userList = document.querySelector("#users");
 
 const editModal = document.querySelector("#editModal");
 const closeModal = document.querySelector("#closeModal");
 const editForm = document.querySelector("#editForm");
 
-/**---------FUNCIONES---------- */
+/**---------FUNCIONES DE RED---------- */
 
 //Solicita datos al servidor y maneja la respuesta
 const requestData = async (url, options) => {
@@ -26,21 +27,20 @@ const requestData = async (url, options) => {
   }
 };
 
-//Mostrar mensajes de notificacion
-const showNotification = (message, isSuccess = true) => {
-  const notification = document.createElement("div");
-  notification.classList.add(
-    "notification",
-    isSuccess ? "notification--success" : "notification--error"
-  );
-  const notificationText = document.createElement("p");
-  notificationText.classList.add("notification__text");
-  notificationText.textContent = message;
-  notification.appendChild(notificationText);
-  document.body.appendChild(notification);
-  setTimeout(() => {
-    notification.remove();
-  }, 3000);
+//Funcion para compartir publicaciones
+const sharePosts = async () => {
+  const options = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  };
+
+  const response = await requestData("/sharePosts", options);
+
+  if (response) {
+    showNotification("Las publicaciones se han compartido correctamente.");
+  } else {
+    showNotification("Hubo un problema al compartir las publiciones.", false);
+  }
 };
 
 //Funcion para añadir usuarios
@@ -75,104 +75,7 @@ const addUser = async (event) => {
   }
 };
 
-//Funcion para compartir publicaciones
-const sharePosts = async () => {
-  const options = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-  };
-
-  const response = await requestData("/sharePosts", options);
-
-  if (response) {
-    showNotification("Las publicaciones se han compartido correctamente.");
-  } else {
-    showNotification("Hubo un problema al compartir las publiciones.", false);
-  }
-};
-
-//Funcion para crear un botón de eliminacion de usuario
-const createDeleteButton = (userEmail) => {
-  const deleteButton = document.createElement("button");
-  deleteButton.classList.add("button", "button--delete");
-  deleteButton.textContent = "Eliminar";
-  deleteButton.addEventListener("click", async () => {
-    const confirmDelete = confirm(
-      "¿Esta seguro de que deseas eliminar esta cuenta? Esta accion no se puede deshacer."
-    );
-    if (confirmDelete) {
-      const response = await requestData(
-        `/deleteUser/${encodeURIComponent(userEmail)}`,
-        { method: "DELETE" }
-      );
-      if (response) {
-        console.log("Usuario eliminado con exito"); // para depuracion
-        loadUsers(); // Recargar la lista de usuarios despues de eliminar
-      } else {
-        console.log("Error al eliminar el usuario"); // para depuracion
-      }
-    }
-  });
-  return deleteButton;
-};
-
-//Funcion para abrir el modal de edicion
-const openEditModal = (user) => {
-  document.querySelector("#editEmail").value = user.email;
-  document.querySelector("#editPassword").value = user.password;
-  document.querySelector("#editUrlPost").value = user.urlPost;
-  document.querySelector("#editMessage").value = user.message;
-  document.querySelector("#editPostCount").value = user.postCount;
-  document.querySelector("#editOldEmail").value = user.email;
-  editModal.style.display = "block";
-};
-
-//Funcion para cerrar el modal de edición
-const closeEditModal = () => {
-  editModal.style.display = "none";
-};
-
-//Función para editar un usuario
-const editUser = async (event) => {
-  event.preventDefault();
-  const formData = new FormData(event.target);
-  const data = {
-    email: formData.get("email"),
-    password: formData.get("password"),
-    urlPost: formData.get("urlPost"),
-    message: formData.get("message"),
-    postCount: Number(formData.get("postCount"), 10 || 1),
-    oldEmail: formData.get("oldEmail"),
-  };
-
-  const options = {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  };
-
-  const response = await requestData("/updateUser", options);
-
-  if (response) {
-    showNotification("La cuenta se ha actualizado correctamente.");
-    closeEditModal();
-    loadUsers(); //Recargar la lista de usuarios
-  } else {
-    showNotification(
-      "Hubo problemas al actualizar la cuenta. Por favor, inténtelo de nuevo",
-      false
-    );
-  }
-};
-
-//Función para crear el botón de edición
-const createEditButton = (user) => {
-  const editButton = document.createElement("button");
-  editButton.classList.add("button", "button--edit");
-  editButton.textContent = "Editar";
-  editButton.addEventListener("click", () => openEditModal(user));
-  return editButton;
-};
+/**---------FUNCIONES DE MANEJO DE DATOS---------- */
 
 //Funcion para cargar y mostrar usuarios
 const loadUsers = async () => {
@@ -180,6 +83,8 @@ const loadUsers = async () => {
 
   if (users) {
     userList.innerHTML = ""; //Limpiar la lista
+    let userCount = 0; //Variable para contar usuarios
+
     users.forEach((user) => {
       const listItem = document.createElement("li");
       listItem.classList.add("user-list__item");
@@ -203,7 +108,101 @@ const loadUsers = async () => {
       listItem.appendChild(createDeleteButton(user.email));
 
       userList.appendChild(listItem);
+
+      userCount++;
     });
+
+    //Mostrar el conteo de usuarios en el UI
+    const userCountDisplay = document.querySelector("#userCount");
+    if (userCountDisplay) {
+      userCountDisplay.textContent = `Nùmero de Cuentas: ${userCount}`;
+    }
+  }
+};
+
+//Función para editar un usuario
+const editUser = async (event) => {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const data = {
+    email: formData.get("email"),
+    password: formData.get("password"),
+    urlPost: formData.get("urlPost"),
+    message: formData.get("message"),
+    postCount: parseInt(formData.get("postCount"), 10) || 1,
+    oldEmail: formData.get("oldEmail"),
+  };
+
+  const options = {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  };
+
+  const response = await requestData("/updateUser", options);
+
+  if (response) {
+    showNotification("La cuenta se ha actualizado correctamente.");
+    closeEditModal();
+    loadUsers(); //Recargar la lista de usuarios
+  } else {
+    showNotification(
+      "Hubo problemas al actualizar la cuenta. Por favor, inténtelo de nuevo",
+      false
+    );
+  }
+};
+
+//Funcion para cerrar el modal de edición
+const closeEditModal = () => {
+  editModal.style.display = "none";
+};
+
+//Función para crear el botón de edición
+const createEditButton = (user) => {
+  const editButton = document.createElement("button");
+  editButton.classList.add("button", "button--edit");
+  editButton.textContent = "Editar";
+  editButton.addEventListener("click", () => openEditModal(user));
+  return editButton;
+};
+
+//Funcion para abrir el modal de edicion
+const openEditModal = (user) => {
+  document.querySelector("#editEmail").value = user.email;
+  document.querySelector("#editPassword").value = user.password;
+  document.querySelector("#editUrlPost").value = user.urlPost;
+  document.querySelector("#editMessage").value = user.message;
+  document.querySelector("#editPostCount").value = user.postCount;
+  document.querySelector("#editOldEmail").value = user.email;
+  editModal.style.display = "block";
+};
+
+//Funcion para crear un botón de eliminacion de usuario
+const createDeleteButton = (userEmail) => {
+  const deleteButton = document.createElement("button");
+  deleteButton.classList.add("button", "button--delete");
+  deleteButton.textContent = "Eliminar";
+  deleteButton.addEventListener("click", () => handleDeleteUser(userEmail));
+  return deleteButton;
+};
+
+//Funcion para manejar la eliminacion de un usuario
+const handleDeleteUser = async (userEmail) => {
+  const confirmDelete = confirm(
+    "¿Esta seguro de que deseas eliminar esta cuenta? Esta accion no se puede deshacer."
+  );
+  if (confirmDelete) {
+    const response = await requestData(
+      `/deleteUser/${encodeURIComponent(userEmail)}`,
+      { method: "DELETE" }
+    );
+    if (response) {
+      console.log("Usuario eliminado con exito"); // para depuracion
+      loadUsers(); // Recargar la lista de usuarios despues de eliminar
+    } else {
+      console.log("Error al eliminar el usuario"); // para depuracion
+    }
   }
 };
 
@@ -219,6 +218,25 @@ const togglePasswordVisibility = () => {
     passwordField.type = "password";
     toggleButton.textContent = "Mostrar Contraseña";
   }
+};
+
+/**---------FUNCIONES DE UI---------- */
+
+//Mostrar mensajes de notificacion
+const showNotification = (message, isSuccess = true) => {
+  const notification = document.createElement("div");
+  notification.classList.add(
+    "notification",
+    isSuccess ? "notification--success" : "notification--error"
+  );
+  const notificationText = document.createElement("p");
+  notificationText.classList.add("notification__text");
+  notificationText.textContent = message;
+  notification.appendChild(notificationText);
+  document.body.appendChild(notification);
+  setTimeout(() => {
+    notification.remove();
+  }, 4000);
 };
 
 /**---------LISTENERS---------- */

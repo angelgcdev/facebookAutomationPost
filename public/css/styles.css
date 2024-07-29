@@ -48,6 +48,8 @@ li {
   --gray: #d9d9d9;
   --red: #ff264a;
   --redDark: hsl(0, 79%, 34%);
+  --green: hsl(120, 78%, 40%);
+  --greenDark: hsl(120, 78%, 20%);
 
   /*Font sizes*/
   --titulo1: 3.6rem;
@@ -227,13 +229,33 @@ li {
   transform: scale(0.98);
 }
 
+.button--edit {
+  background-color: var(--green);
+  color: var(--white);
+  padding: 1rem;
+  width: 90px;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.button--edit:hover {
+  background-color: var(--greenDark);
+  color: var(--gray);
+}
+
+.button--delete:active {
+  transform: scale(0.98);
+  box-shadow: none;
+}
+
 .button--delete {
   background-color: var(--red);
   color: var(--white);
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
   padding: 1rem;
+  width: 90px;
   margin-left: 1rem;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  box-shadow: 3px 2px 3px rgba(0, 0, 0, 0.5);
 }
 
 .button--delete:hover {
@@ -242,6 +264,24 @@ li {
 }
 
 .button--delete:active {
+  transform: scale(0.98);
+  box-shadow: none;
+}
+
+.button--save {
+  background-color: var(--skyBlue);
+  color: var(--white);
+  padding: 1rem;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  box-shadow: 3px 2px 3px rgba(0, 0, 0, 0.5);
+}
+
+.button--save:hover {
+  background-color: var(--lightBlue);
+  color: var(--gray);
+}
+
+.button--save:active {
   transform: scale(0.98);
   box-shadow: none;
 }
@@ -272,6 +312,16 @@ li {
   letter-spacing: 0.1rem;
   line-height: 1.5;
   text-transform: uppercase;
+}
+
+.user-list__count {
+  color: var(--gray);
+  padding: 1.6rem;
+  margin-bottom: 3.2rem;
+  font-size: var(--small);
+  letter-spacing: 0.1rem;
+  text-transform: uppercase;
+  font-weight: 300;
 }
 
 .user-list__items {
@@ -326,13 +376,51 @@ li {
 }
 
 .notification--success {
-  background-color: rgb(16 131 16);
+  background-color: var(--green);
   color: var(--white);
+  text-shadow: 1px 1px 2px black;
 }
 
 .notification--error {
   background-color: var(--red);
   color: var(--white);
+  text-shadow: 1px 1px 2px black;
+}
+
+/*Estilos para el modal editar*/
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 30;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background: var(--blue);
+  margin: 15% auto;
+  padding: 2rem;
+  border: 1px solid #888;
+  border-radius: 1rem;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 2.8rem;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 /*------ Media Queries ------*/
@@ -392,40 +480,4 @@ li {
   .form-container {
     margin: initial;
   }
-}
-
-/*Estilos para el modal editar*/
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 30;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-  background: var(--blue);
-  margin: 15% auto;
-  padding: 2rem;
-  border: 1px solid #888;
-  border-radius: 1rem;
-  width: 80%;
-}
-
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 2.8rem;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
 }
