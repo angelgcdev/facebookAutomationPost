@@ -88,7 +88,10 @@
             </button>
           </form>
 
-          <button class="button button--share" id="sharePostsButton">
+          <button
+            class="button button--share button-gost"
+            id="sharePostsButton"
+          >
             Compartir publicaciones
           </button>
         </div>
@@ -96,6 +99,10 @@
 
       <div class="user-list">
         <h2 class="user-list__title">Cuentas Registradas</h2>
+        <!-- Boton para ver el reporte de publicaciones -->
+        <button class="button button--report button-gost" id="viewReportButton">
+          Ver el reporte de publicaciones
+        </button>
         <p class="user-list__count" id="userCount"></p>
         <ul id="users" class="user-list__items"></ul>
       </div>
@@ -172,6 +179,19 @@
             Guardar Cambios
           </button>
         </form>
+      </div>
+    </div>
+
+    <!-- Modal para mostrar el reporte de publicaciones -->
+    <div class="modal" id="reportModal">
+      <div class="modal-content">
+        <span id="closeReportModal" class="close">&times;</span>
+        <div class="form-title">
+          <h2 class="form-title__main">Reporte de Publicaciones</h2>
+        </div>
+        <div id="reportContent" class="report-content">
+          <!-- Aquí se cargará el reporte -->
+        </div>
       </div>
     </div>
 

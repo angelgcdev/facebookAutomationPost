@@ -9,17 +9,41 @@ const { automatizarFacebook } = require("./facebookAutomation");
 
 app.use(express.json());
 
-//Ruta del archivo JSON de configuracion
+//Ruta del archivo JSON de configuracion, apunta al archivo quiero hacer read o write
 const configPath = path.join(__dirname, "./config/facebookConfig.json");
+// Ruta del archivo JSON para el reporte
+const reportPath = path.join(__dirname, "./config/postsReport.json");
 
-//Funcion para leer y escribir el archivo JSON
+//Funcion para leer el archivo JSON
 const readConfigFile = async () => {
   const data = await fs.readFile(configPath, "utf-8");
   return JSON.parse(data);
 };
 
+//Funcion para escribir el archivo JSON
 const writeConfigFile = async (config) => {
   await fs.writeFile(configPath, JSON.stringify(config, null, 2)); // parametro 2 para la sangria y mejorar la legibilidad de lectura.
+};
+
+// Función para leer el archivo JSON del reporte
+const readReportFile = async () => {
+  try {
+    const data = await fs.readFile(reportPath, "utf-8");
+    return JSON.parse(data);
+  } catch (error) {
+    console.error("Error al leer el archivo de reporte:", error);
+    throw error; // Propaga el error para que pueda ser manejado en el endpoint
+  }
+};
+
+// Función para escribir en el archivo JSON del reporte
+const writeReportFile = async (report) => {
+  try {
+    await fs.writeFile(reportPath, JSON.stringify(report, null, 2));
+  } catch (error) {
+    console.error("Error al escribir en el archivo de reporte:", error);
+    throw error; // Propaga el error para que pueda ser manejado si es necesario
+  }
 };
 
 //Endpoint para añadir un usuario
@@ -49,20 +73,19 @@ app.post("/addUser", async (req, res) => {
 app.post("/sharePosts", async (req, res) => {
   try {
     const config = await readConfigFile();
-    const results = [];
 
     for (const user of config.users) {
-      const groupsShared = await automatizarFacebook(user);
-      results.push({
-        user: user.email,
-        groupsShared,
-      });
+      try {
+        await automatizarFacebook(user);
+      } catch (error) {
+        console.log(`Error al automatizar la cuenta de ${user.email}:`, error);
+      }
     }
 
     //Enviar respuesta JSON
-    res
-      .status(200)
-      .json({ message: "Automatización de posts completada con éxito." });
+    res.status(200).json({
+      message: "Automatización de posts completada con éxito.",
+    });
   } catch (error) {
     console.error("Error durante sharePosts:", error);
     res.status(500).json({
@@ -147,13 +170,26 @@ app.put("/updateUser", async (req, res) => {
   }
 });
 
+//Enpoint para obtener el reporte de publicaciones
+app.get("/postsReport", async (req, res) => {
+  try {
+    const report = await readReportFile();
+    res.status(200).json(report.reports);
+  } catch (error) {
+    console.error("Error al obtener el reporte de publicaciones:", error);
+    res.status(500).json({
+      message: "Se produjo un error al obtener el reporte de publicaciones.",
+    });
+  }
+});
+
 // Servir el archivo HTML
 app.use(express.static(path.join(__dirname, "../public")));
 
 //Middleware para manejo de errores
 app.use((err, req, res, next) => {
   console.log(err.stack);
-  res.status(500).message({ message: "Algo salió mal", error: err.message });
+  res.status(500).json({ message: "Algo salió mal", error: err.message });
 });
 
 // Iniciar servidor

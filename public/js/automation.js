@@ -239,6 +239,57 @@ const showNotification = (message, isSuccess = true) => {
   }, 4000);
 };
 
+/**---------FUNCIONES DE REPORTES---------- */
+
+//Función para abrir el modal del reporte
+const openReportModal = async () => {
+  try {
+    const report = await requestData("/postsReport");
+    if (report) {
+      const reportContent = document.querySelector("#reportContent");
+      reportContent.innerHTML = ""; //Limpiar el contenido previo
+
+      report.forEach((post) => {
+        const postElement = document.createElement("div");
+        postElement.classList.add("report-post__item");
+
+        postElement.innerHTML = `
+        <p class="report-post__text"><strong>Cuenta:</strong> ${post.email}</p>
+        <p class="report-post__text"><strong>Mensaje:</strong> ${
+          post.message
+        }</p>
+        <p class="report-post__text"><strong>URL:</strong> <a href="${
+          post.URL
+        }" target="_blank">${post.URL}</a></p>
+        <p class="report-post__text"><strong>Cantidad de Publicaciones:</strong> ${
+          post.postsCount
+        }</p>
+        <p class="report-post__text"><strong>
+        Fecha(s):</strong>
+        <ul class="date-list">
+        ${post.dates
+          .map((date) => `<li>${new Date(date).toLocaleString()}</li>`)
+          .join("")}
+        </ul>
+        </p>
+        `;
+
+        reportContent.appendChild(postElement);
+      });
+
+      document.querySelector("#reportModal").style.display = "block";
+    }
+  } catch (error) {
+    showNotification("Error al cargar el reporte:", false);
+    console.error(error);
+  }
+};
+
+//Funcion para cerrar el modal del reporte
+const closeReportModal = () => {
+  document.querySelector("#reportModal").style.display = "none";
+};
+
 /**---------LISTENERS---------- */
 
 const cargarEventListeners = () => {
@@ -266,6 +317,23 @@ const cargarEventListeners = () => {
   window.addEventListener("click", (event) => {
     if (event.target === editModal) {
       closeEditModal();
+    }
+  });
+
+  //se dispara cuando se hace clien en el boton 'Ver Reporte de Publicaciones'
+  document
+    .querySelector("#viewReportButton")
+    .addEventListener("click", openReportModal);
+
+  //Se dispara cuando se hace click en el boton 'X' del reportModal
+  document
+    .querySelector("#closeReportModal")
+    .addEventListener("click", closeReportModal);
+
+  //Cerrar el modal si se hace click fuera de el
+  window.addEventListener("click", (event) => {
+    if (event.target === document.querySelector("#reportModal")) {
+      closeReportModal();
     }
   });
 };

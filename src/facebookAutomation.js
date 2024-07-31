@@ -1,4 +1,6 @@
 const { chromium } = require("playwright");
+const fs = require("fs/promises");
+const path = require("path");
 
 const MIN_DELAY = 5000; // Minimo tiempo de espera en milisegundos
 const MAX_DELAY = 10000; // Máximo tiempo de espera en milisegundos
@@ -28,12 +30,30 @@ const loginToFacebook = async (page, user) => {
   await page.waitForNavigation({ timeout: 30000 }); //Espera hasta 30 segundos
 };
 
+const readReportFile = async () => {
+  const data = await fs.readFile(
+    path.join(__dirname, "./config/postsReport.json"),
+    "utf-8"
+  );
+  return JSON.parse(data);
+};
+
+const writeReportFile = async (report) => {
+  await fs.writeFile(
+    path.join(__dirname, "./config/postsReport.json"),
+    JSON.stringify(report, null, 2)
+  );
+};
+
 // Función Principal de automatización de Facebook
 const automatizarFacebook = async (user) => {
   let browser;
   let totalGroupsShared = 0; //Contador de grupos compartidos
   try {
-    browser = await chromium.launch({ headless: false, slowMo: 50 });
+    browser = await chromium.launch({
+      headless: false,
+      slowMo: 50,
+    });
     const context = await browser.newContext();
     const page = await context.newPage();
 
@@ -91,6 +111,31 @@ const automatizarFacebook = async (user) => {
     }
 
     await browser.close();
+
+    //Actualizar el reporte de publicaciones en el archivo JSON separado
+    const report = await readReportFile();
+    const existingReportIndex = report.reports.findIndex(
+      (r) => r.email === user.email
+    );
+
+    const currentDate = new Date().toISOString();
+
+    if (existingReportIndex !== -1) {
+      report.reports[existingReportIndex].postsCount = Number(
+        report.reports[existingReportIndex].postsCount + totalGroupsShared
+      );
+      report.reports[existingReportIndex].dates.push(currentDate); //Agrega la fecha actual
+    } else {
+      report.reports.push({
+        email: user.email,
+        message: user.message,
+        URL: user.urlPost,
+        postsCount: totalGroupsShared,
+        dates: [currentDate], // current date
+      });
+    }
+
+    await writeReportFile(report);
 
     console.log(`Post compartido en ${totalGroupsShared} grupos.`);
     return totalGroupsShared; //Retorna el total de publicaciones en grupos por usuario

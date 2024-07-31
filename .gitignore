@@ -3,6 +3,7 @@ node_modules/
 
 # Ignorar archivos de configuración sensible
 src/config/facebookConfig.json
+src/config/postsReport.json
 
 # Ignorar archivos de configuración del editor
 .vscode/
