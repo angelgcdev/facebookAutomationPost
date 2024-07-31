@@ -194,13 +194,18 @@ li {
   font-weight: 600;
   font-size: var(--smaller);
   letter-spacing: 0.1rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button-gost {
+  background-color: transparent;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
 }
 
 .button--add {
   width: 100%;
   background-color: var(--skyBlue);
   color: var(--white);
-  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .button--add:hover {
@@ -214,15 +219,14 @@ li {
 
 .button--share {
   margin-top: 3.2rem;
-  background-color: transparent;
   border: 2px solid var(--white);
   color: var(--white);
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
 }
 
 .button--share:hover {
-  background-color: var(--white);
-  color: var(--blue);
+  border: 2px solid var(--skyBlue);
+  color: var(--skyBlue);
+  font-weight: bold;
 }
 
 .button--share:active {
@@ -230,11 +234,12 @@ li {
 }
 
 .button--edit {
+  border-radius: 1rem;
+  text-transform: capitalize;
   background-color: var(--green);
   color: var(--white);
   padding: 1rem;
   width: 90px;
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
@@ -249,12 +254,13 @@ li {
 }
 
 .button--delete {
+  border-radius: 1rem;
+  text-transform: capitalize;
   background-color: var(--red);
   color: var(--white);
   padding: 1rem;
   width: 90px;
   margin-left: 1rem;
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
   box-shadow: 3px 2px 3px rgba(0, 0, 0, 0.5);
 }
 
@@ -272,7 +278,6 @@ li {
   background-color: var(--skyBlue);
   color: var(--white);
   padding: 1rem;
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
   box-shadow: 3px 2px 3px rgba(0, 0, 0, 0.5);
 }
 
@@ -282,6 +287,25 @@ li {
 }
 
 .button--save:active {
+  transform: scale(0.98);
+  box-shadow: none;
+}
+
+.button--report {
+  font-size: var(--smaller);
+  text-transform: capitalize;
+  border-radius: 1rem;
+  border: 2px solid var(--white);
+  color: var(--white);
+  margin-left: 1.6rem;
+}
+
+.button--report:hover {
+  border: 2px solid var(--gray);
+  color: var(--gray);
+}
+
+.button--report:active {
   transform: scale(0.98);
   box-shadow: none;
 }
@@ -421,6 +445,26 @@ li {
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+/* Estilos para el reporte */
+.report-post__item {
+  background-color: var(--white);
+  padding: 1.6rem;
+  border-radius: 1rem;
+  overflow: auto;
+  margin-bottom: 1.6rem;
+}
+
+.report-post__text {
+  line-height: 1.6;
+  letter-spacing: 0.1rem;
+  font-size: var(--normal);
+}
+
+.date-list {
+  margin-left: 1.6rem;
+  line-height: 1.5;
 }
 
 /*------ Media Queries ------*/
