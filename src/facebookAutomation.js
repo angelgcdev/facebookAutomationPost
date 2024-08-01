@@ -63,8 +63,29 @@ const automatizarFacebook = async (user) => {
     // Navegar al enlace del post de una página
     await page.goto(user.urlPost);
 
+    //Verificar si ya se dio me gusta
+    const likedButton = 'div[aria-label="Eliminar Me gusta"]';
+    const likeButton = 'div[aria-label="Me gusta"]';
+
+    const isLiked = await page.evaluate((selector) => {
+      const button = document.querySelector(selector);
+      return (
+        button && button.getAttribute("aria-label") === "Eliminar Me gusta"
+      );
+    }, likedButton);
+
+    if (!isLiked) {
+      //Darle me gusta a la publicación
+      await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
+      await clickOnSelector(page, 'div[aria-label="Me gusta"]');
+    } else {
+      console.log("El boton 'Me gusta' ya está activado");
+    }
+
     // Publicar en los primeros tres grupos
     for (let i = 1; i <= user.postCount; i++) {
+      await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
+
       //Botón Compartir
       const selector1 =
         'div[aria-label="Envía la publicación a amigos o publícala en tu perfil."]';
