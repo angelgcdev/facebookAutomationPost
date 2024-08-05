@@ -198,10 +198,10 @@ const handleDeleteUser = async (userEmail) => {
       { method: "DELETE" }
     );
     if (response) {
-      console.log("Usuario eliminado con exito"); // para depuracion
+      showNotification(response.message);
       loadUsers(); // Recargar la lista de usuarios despues de eliminar
     } else {
-      console.log("Error al eliminar el usuario"); // para depuracion
+      showNotification(response.message, false);
     }
   }
 };
@@ -290,6 +290,22 @@ const closeReportModal = () => {
   document.querySelector("#reportModal").style.display = "none";
 };
 
+//Funcion para eliminar el reporte de publicaciones
+const deleteReport = async (userEmail) => {
+  const confirmDelete = confirm(
+    "¿Esta seguro de que deseas eliminar esta el Reporte? Esta accion no se puede deshacer."
+  );
+  if (confirmDelete) {
+    const response = await requestData("/deleteReport", { method: "DELETE" });
+    if (response) {
+      showNotification(response.message);
+      openReportModal(); // Recargar el reporte despues de eliminar
+    } else {
+      showNotification(response.message, false);
+    }
+  }
+};
+
 /**---------LISTENERS---------- */
 
 const cargarEventListeners = () => {
@@ -320,10 +336,15 @@ const cargarEventListeners = () => {
     }
   });
 
-  //se dispara cuando se hace clien en el boton 'Ver Reporte de Publicaciones'
+  //se dispara cuando se hace click en en el boton 'Ver Reporte'
   document
     .querySelector("#viewReportButton")
     .addEventListener("click", openReportModal);
+
+  //Se dispara cuando se hace click en el boton 'Eliminar Reporte'
+  document
+    .querySelector("#deleteReportButton")
+    .addEventListener("click", deleteReport);
 
   //Se dispara cuando se hace click en el boton 'X' del reportModal
   document

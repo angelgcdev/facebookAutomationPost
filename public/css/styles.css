@@ -310,6 +310,25 @@ li {
   box-shadow: none;
 }
 
+.button--reportDelete {
+  font-size: var(--smaller);
+  text-transform: capitalize;
+  border-radius: 1rem;
+  border: 2px solid var(--red);
+  color: var(--red);
+  margin-left: 1.6rem;
+}
+
+.button--reportDelete:hover {
+  border: 2px solid var(--redDark);
+  color: var(--redDark);
+}
+
+.button--reportDelete:active {
+  transform: scale(0.98);
+  box-shadow: none;
+}
+
 /*Estilos para el user-list*/
 .user-list {
   background: linear-gradient(

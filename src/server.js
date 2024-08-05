@@ -36,14 +36,9 @@ const readReportFile = async () => {
   }
 };
 
-// Función para escribir en el archivo JSON del reporte
-const writeReportFile = async (report) => {
-  try {
-    await fs.writeFile(reportPath, JSON.stringify(report, null, 2));
-  } catch (error) {
-    console.error("Error al escribir en el archivo de reporte:", error);
-    throw error; // Propaga el error para que pueda ser manejado si es necesario
-  }
+//Funcion para escribir el archivo JSON
+const writeReportFile = async (config) => {
+  await fs.writeFile(reportPath, JSON.stringify(config, null, 2)); // parametro 2 para la sangria y mejorar la legibilidad de lectura.
 };
 
 //Endpoint para añadir un usuario
@@ -125,20 +120,17 @@ app.delete("/deleteUser/:email", async (req, res) => {
     await writeConfigFile(config);
 
     // Enviar respuesta JSON
-    res.status(200).json({ message: "Usuario eliminado con éxito." });
+    res.status(200).json({ message: "La Cuenta ha sido eliminada con éxito." });
   } catch (error) {
     console.error("Error durante la eliminacion del usuario:", error);
     res
       .status(500)
-      .json({ message: "Se produjo un error al eliminar el usuario." });
+      .json({ message: "Se produjo un error al eliminar la Cuenta." });
   }
 });
 
 //Endpoint para actualizar un usuario
 app.put("/updateUser", async (req, res) => {
-  console.log("Recibido PUT /updateUser");
-  console.log("Body:", req.body);
-
   const updatedUser = req.body;
 
   try {
@@ -180,6 +172,33 @@ app.get("/postsReport", async (req, res) => {
     res.status(500).json({
       message: "Se produjo un error al obtener el reporte de publicaciones.",
     });
+  }
+});
+
+//Endpoint para eliminar el reporte de publicaciones
+app.delete("/deleteReport", async (req, res) => {
+  try {
+    const report = await readReportFile();
+
+    // Verificar si el campo `reports` existe y es un array
+    if (!Array.isArray(report.reports)) {
+      return res.status(400).json({
+        message:
+          'El archivo de configuración no contiene un array válido en "reports".',
+      });
+    }
+
+    //Escribir un array vacio en el archivo
+    report.reports = [];
+    await writeReportFile(report);
+
+    // Enviar respuesta JSON
+    res.status(200).json({ message: "Reporte eliminado con éxito." });
+  } catch (error) {
+    console.error("Error durante la eliminacion del Reporte:", error);
+    res
+      .status(500)
+      .json({ message: "Se produjo un error al eliminar el Reporte." });
   }
 });
 
