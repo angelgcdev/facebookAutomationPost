@@ -48,7 +48,7 @@ const writeReportFile = async (report) => {
 // Función Principal de automatización de Facebook
 const automatizarFacebook = async (user) => {
   let browser;
-  let totalGroupsShared = 0; //Contador de grupos compartidos
+  const flagPost = 1; //acumulador
   try {
     browser = await chromium.launch({
       headless: false,
@@ -127,9 +127,6 @@ const automatizarFacebook = async (user) => {
       await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
       await clickOnSelector(page, 'div[aria-label="Publicar"]');
 
-      //Incrementar el contador de grupos compartidos
-      totalGroupsShared++;
-
       //Actualizar el reporte de publicaciones en el archivo JSON
       const report = await readReportFile();
       const existingReportIndex = report.reports.findIndex(
@@ -139,16 +136,16 @@ const automatizarFacebook = async (user) => {
       const currentDate = new Date().toISOString();
 
       if (existingReportIndex !== -1) {
-        report.reports[existingReportIndex].postsCount = Number(
-          report.reports[existingReportIndex].postsCount + totalGroupsShared
-        );
+        report.reports[existingReportIndex].postsCount =
+          Number(report.reports[existingReportIndex].postsCount) + flagPost;
+
         report.reports[existingReportIndex].dates.push(currentDate); //Agrega la fecha actual
       } else {
         report.reports.push({
           email: user.email,
           message: user.message,
           URL: user.urlPost,
-          postsCount: totalGroupsShared,
+          postsCount: flagPost,
           dates: [currentDate], // current date
         });
       }
