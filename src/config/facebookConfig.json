@@ -1,3 +1,26 @@
 {
-  "users": []
+  "users": [
+    {
+      "email": "angelgcdev@gmail.com",
+      "password": "perro2023_.",
+      "urlPost": "https://www.facebook.com/posgradodiplomadosupea/videos/1485375658751975",
+      "message": "#POSGRADOlagc",
+      "postCount": 5,
+      "oldEmail": "angelgcdev@gmail.com"
+    },
+    {
+      "email": "angelgcdev2@gmail.com",
+      "password": "gato22024_.",
+      "urlPost": "https://www.facebook.com/posgradodiplomadosupea/videos/1485375658751975",
+      "message": "#POSGRADOlagc",
+      "postCount": 5
+    },
+    {
+      "email": "descargastyc@gmail.com",
+      "password": "desprue2024_.",
+      "urlPost": "https://www.facebook.com/posgradodiplomadosupea/videos/1485375658751975",
+      "message": "#POSGRADOlagc",
+      "postCount": 5
+    }
+  ]
 }

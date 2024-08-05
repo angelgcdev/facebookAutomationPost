@@ -129,37 +129,34 @@ const automatizarFacebook = async (user) => {
 
       //Incrementar el contador de grupos compartidos
       totalGroupsShared++;
+
+      //Actualizar el reporte de publicaciones en el archivo JSON
+      const report = await readReportFile();
+      const existingReportIndex = report.reports.findIndex(
+        (r) => r.email === user.email
+      );
+
+      const currentDate = new Date().toISOString();
+
+      if (existingReportIndex !== -1) {
+        report.reports[existingReportIndex].postsCount = Number(
+          report.reports[existingReportIndex].postsCount + totalGroupsShared
+        );
+        report.reports[existingReportIndex].dates.push(currentDate); //Agrega la fecha actual
+      } else {
+        report.reports.push({
+          email: user.email,
+          message: user.message,
+          URL: user.urlPost,
+          postsCount: totalGroupsShared,
+          dates: [currentDate], // current date
+        });
+      }
+
+      await writeReportFile(report);
     }
 
     await browser.close();
-
-    //Actualizar el reporte de publicaciones en el archivo JSON separado
-    const report = await readReportFile();
-    const existingReportIndex = report.reports.findIndex(
-      (r) => r.email === user.email
-    );
-
-    const currentDate = new Date().toISOString();
-
-    if (existingReportIndex !== -1) {
-      report.reports[existingReportIndex].postsCount = Number(
-        report.reports[existingReportIndex].postsCount + totalGroupsShared
-      );
-      report.reports[existingReportIndex].dates.push(currentDate); //Agrega la fecha actual
-    } else {
-      report.reports.push({
-        email: user.email,
-        message: user.message,
-        URL: user.urlPost,
-        postsCount: totalGroupsShared,
-        dates: [currentDate], // current date
-      });
-    }
-
-    await writeReportFile(report);
-
-    console.log(`Post compartido en ${totalGroupsShared} grupos.`);
-    return totalGroupsShared; //Retorna el total de publicaciones en grupos por usuario
   } catch (error) {
     console.log("Se ha producido un error:", error);
     if (browser) {
