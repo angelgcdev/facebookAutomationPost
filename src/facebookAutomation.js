@@ -112,6 +112,15 @@ const automatizarFacebook = async (user) => {
 
       await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
       await page.waitForSelector('div[role="list"]');
+
+      const titleGroupPost = await page.locator(
+        `div[role="listitem"][data-visualcompletion="ignore-dynamic"]:nth-of-type(${i})
+  span[class="x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x676frb x1lkfr7t x1lbecb7 xk50ysn xzsf02u x1yc453h"]`
+      );
+
+      const titleGroupPostText = await titleGroupPost.textContent();
+      console.log(titleGroupPostText);
+
       await page.click(
         `div[role="list"] div[role="listitem"][data-visualcompletion="ignore-dynamic"]:nth-child(${i})`
       );
@@ -127,6 +136,8 @@ const automatizarFacebook = async (user) => {
       await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
       await clickOnSelector(page, 'div[aria-label="Publicar"]');
 
+      await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
+
       //Actualizar el reporte de publicaciones en el archivo JSON
       const report = await readReportFile();
       const existingReportIndex = report.reports.findIndex(
@@ -139,16 +150,26 @@ const automatizarFacebook = async (user) => {
         report.reports[existingReportIndex].postsCount =
           Number(report.reports[existingReportIndex].postsCount) + flagPost;
 
-        report.reports[existingReportIndex].dates.push(currentDate); //Agrega la fecha actual
+        report.reports[existingReportIndex].dates.push({
+          titleGroupPostText: titleGroupPostText,
+          currentDate: currentDate,
+        }); //Agrega la fecha actual
       } else {
         report.reports.push({
           email: user.email,
           message: user.message,
           URL: user.urlPost,
           postsCount: flagPost,
-          dates: [currentDate], // current date
+          dates: [
+            {
+              titleGroupPostText: titleGroupPostText,
+              currentDate: currentDate,
+            },
+          ],
         });
       }
+
+      console.log("reporte:", report.reports);
 
       await writeReportFile(report);
     }

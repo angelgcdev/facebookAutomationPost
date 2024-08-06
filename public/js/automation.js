@@ -244,12 +244,12 @@ const showNotification = (message, isSuccess = true) => {
 //Función para abrir el modal del reporte
 const openReportModal = async () => {
   try {
-    const report = await requestData("/postsReport");
-    if (report) {
+    const reports = await requestData("/postsReport");
+    if (reports) {
       const reportContent = document.querySelector("#reportContent");
       reportContent.innerHTML = ""; //Limpiar el contenido previo
 
-      report.forEach((post) => {
+      reports.forEach((post) => {
         const postElement = document.createElement("div");
         postElement.classList.add("report-post__item");
 
@@ -265,11 +265,20 @@ const openReportModal = async () => {
           post.postsCount
         }</p>
         <p class="report-post__text"><strong>
-        Fecha(s):</strong>
+        Detalle(s):</strong>
         <ul class="date-list">
-        ${post.dates
-          .map((date) => `<li>${new Date(date).toLocaleString()}</li>`)
-          .join("")}
+        ${
+          post.dates
+            .map((date) => {
+              return `<li>${date.titleGroupPostText} : ${new Date(
+                date.currentDate
+              ).toLocaleString()}</li>`;
+            })
+            .join("")
+
+          // .map((date) => `<li>${new Date(date).toLocaleString()}</li>`)
+          // .join("")
+        }
         </ul>
         </p>
         `;
