@@ -46,6 +46,7 @@ li {
   --skyBlueDark: hsl(214, 90%, 31%);
   --white: #f2f2f2;
   --gray: #d9d9d9;
+  --grayDark: hsl(216, 13%, 40%);
   --red: #ff264a;
   --redDark: hsl(0, 79%, 34%);
   --green: hsl(120, 78%, 40%);
@@ -397,7 +398,7 @@ li {
 
 .user-list__item-message,
 .user-list__item-posts {
-  color: #707070;
+  color: var(--grayDark);
   font-weight: 500;
   padding-left: 1rem;
 }
@@ -476,14 +477,31 @@ li {
 }
 
 .report-post__text {
-  line-height: 1.6;
   letter-spacing: 0.1rem;
   font-size: var(--normal);
+  color: var(--grayDark);
+  padding-bottom: 1.6rem;
+  padding-left: 3.2rem;
+  line-height: 1.5;
 }
 
-.date-list {
-  margin-left: 1.6rem;
+.report-post__email {
+  font-weight: 600;
+  color: var(--black);
+  font-size: var(--titulo3);
+  letter-spacing: 0.1rem;
   line-height: 1.5;
+  padding: 1.6rem;
+}
+
+.report-post__list {
+  margin-left: 4rem;
+  line-height: 1.5;
+  padding-left: 3.2rem;
+}
+
+.report-post__listItem {
+  list-style-type: decimal;
 }
 
 /*------ Media Queries ------*/

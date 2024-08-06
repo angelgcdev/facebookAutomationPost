@@ -101,7 +101,7 @@ const loadUsers = async () => {
 
       const postsSpan = document.createElement("span");
       postsSpan.classList.add("user-list__item-posts", "user-list__span");
-      postsSpan.textContent = `Publicaciones Pendientes: ${user.postCount}`;
+      postsSpan.textContent = `Publicaciones Programadas: ${user.postCount}`;
       listItem.appendChild(postsSpan);
 
       listItem.appendChild(createEditButton(user));
@@ -254,31 +254,29 @@ const openReportModal = async () => {
         postElement.classList.add("report-post__item");
 
         postElement.innerHTML = `
-        <p class="report-post__text"><strong>Cuenta:</strong> ${post.email}</p>
-        <p class="report-post__text"><strong>Mensaje:</strong> ${
-          post.message
-        }</p>
-        <p class="report-post__text"><strong>URL:</strong> <a href="${
-          post.URL
-        }" target="_blank">${post.URL}</a></p>
-        <p class="report-post__text"><strong>Cantidad de Publicaciones:</strong> ${
+        <p class="report-post__email">${post.email}</p>
+        <p class="report-post__text">Mensaje: ${post.message}</p>
+        <p class="report-post__text">URL: 
+          <a href="${post.URL}" target="_blank">${post.URL}</a>
+        </p>
+        <p class="report-post__text">Cantidad de Publicaciones: ${
           post.postsCount
         }</p>
-        <p class="report-post__text"><strong>
-        Detalle(s):</strong>
-        <ul class="date-list">
-        ${
-          post.dates
-            .map((date) => {
-              return `<li>${date.titleGroupPostText} : ${new Date(
+        <p class="report-post__text">
+        Detalle(s):
+        <ul class="report-post__list">
+        ${post.dates
+          .map((date) => {
+            return `<li class="report-post__text report-post__listItem">
+              <span class="report-post__groupText"> ${
+                date.titleGroupPostText
+              } </span> 👉 
+              <span class="report-post__date">​ ${new Date(
                 date.currentDate
-              ).toLocaleString()}</li>`;
-            })
-            .join("")
-
-          // .map((date) => `<li>${new Date(date).toLocaleString()}</li>`)
-          // .join("")
-        }
+              ).toLocaleString()}​🕛 </span>
+              </li>`;
+          })
+          .join("")}
         </ul>
         </p>
         `;
