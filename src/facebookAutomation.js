@@ -64,22 +64,32 @@ const automatizarFacebook = async (user) => {
     await page.goto(user.urlPost);
 
     //Verificar si ya se dio me gusta
-    const likedButton = 'div[aria-label="Eliminar Me gusta"]';
-    const likeButton = 'div[aria-label="Me gusta"]';
+    // Definir selectores de botones
+    const likedButton1 = 'div[aria-label="Eliminar Me gusta"]';
+    const likedButton2 = 'div[aria-label="Me gusta activo"]';
+    const defaultLikeButton = 'div[aria-label="Me gusta"]';
 
+    // Esperar a que aparezca uno de los selectores o un timeout
+    const firstSelectorLiked = await Promise.race([
+      page.waitForSelector(likedButton1, { timeout: 10000 }).catch(() => null),
+      page.waitForSelector(likedButton2, { timeout: 10000 }).catch(() => null),
+    ]);
+
+    // Determinar si se encontró alguno de los botones
     const isLiked = await page.evaluate((selector) => {
       const button = document.querySelector(selector);
       return (
         button && button.getAttribute("aria-label") === "Eliminar Me gusta"
       );
-    }, likedButton);
+    }, firstSelectorLiked || defaultLikeButton);
 
+    // Si no se ha encontrado el botón "Me gusta" en estado activo
     if (!isLiked) {
-      //Darle me gusta a la publicación
+      // Darle me gusta a la publicación
       await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
-      await clickOnSelector(page, 'div[aria-label="Me gusta"]');
+      await clickOnSelector(page, defaultLikeButton);
     } else {
-      console.log("El boton 'Me gusta' ya está activado");
+      console.log("El botón 'Me gusta' ya está activado");
     }
 
     // Publicar en los primeros tres grupos
@@ -91,10 +101,12 @@ const automatizarFacebook = async (user) => {
         'div[aria-label="Envía la publicación a amigos o publícala en tu perfil."]';
       const selector2 =
         'div[aria-label="Envía esto a tus amigos o publícalo en tu perfil."]';
+      const selector3 = 'div[aria-label="Compartir"]';
 
       const firstSelector = await Promise.race([
         page.waitForSelector(selector1, { timeout: 10000 }),
         page.waitForSelector(selector2, { timeout: 10000 }),
+        page.waitForSelector(selector3, { timeout: 10000 }),
       ]);
 
       if (firstSelector) {

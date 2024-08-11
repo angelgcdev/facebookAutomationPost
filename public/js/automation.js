@@ -8,7 +8,21 @@ const editModal = document.querySelector("#editModal");
 const closeModal = document.querySelector("#closeModal");
 const editForm = document.querySelector("#editForm");
 
-/**---------FUNCIONES DE RED---------- */
+/**---------FUNCIONES---------- */
+
+//Funcion para alternar la visibilidad de la contraseña
+const togglePasswordVisibility = () => {
+  const passwordField = document.querySelector(".password");
+  const toggleButton = document.querySelector(".togglePassword");
+
+  if (passwordField.type === "password") {
+    passwordField.type = "text";
+    toggleButton.textContent = "Ocultar Contraseña";
+  } else {
+    passwordField.type = "password";
+    toggleButton.textContent = "Mostrar Contraseña";
+  }
+};
 
 //Solicita datos al servidor y maneja la respuesta
 const requestData = async (url, options) => {
@@ -27,55 +41,75 @@ const requestData = async (url, options) => {
   }
 };
 
-//Funcion para compartir publicaciones
-const sharePosts = async () => {
-  const options = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-  };
-
-  const response = await requestData("/sharePosts", options);
-
-  if (response) {
-    showNotification("Las publicaciones se han compartido correctamente.");
-  } else {
-    showNotification("Hubo un problema al compartir las publiciones.", false);
-  }
+//Mostrar mensajes de notificacion
+const showNotification = (message, isSuccess = true) => {
+  const notification = document.createElement("div");
+  notification.classList.add(
+    "notification",
+    isSuccess ? "notification--success" : "notification--error"
+  );
+  const notificationText = document.createElement("p");
+  notificationText.classList.add("notification__text");
+  notificationText.textContent = message;
+  notification.appendChild(notificationText);
+  document.body.appendChild(notification);
+  setTimeout(() => {
+    notification.remove();
+  }, 4000);
 };
 
-//Funcion para añadir usuarios
-const addUser = async (event) => {
-  event.preventDefault();
-  const formData = new FormData(event.target);
-  const data = {
-    email: formData.get("email"),
-    password: formData.get("password"),
-    urlPost: formData.get("urlPost"),
-    message: formData.get("message"),
-    postCount: parseInt(formData.get("postCount"), 10 || 1),
-  };
+//Funcion para abrir el modal de edicion
+const openEditModal = (user) => {
+  document.querySelector("#editEmail").value = user.email;
+  document.querySelector("#editPassword").value = user.password;
+  document.querySelector("#editUrlPost").value = user.urlPost;
+  document.querySelector("#editMessage").value = user.message;
+  document.querySelector("#editPostCount").value = user.postCount;
+  document.querySelector("#editOldEmail").value = user.email;
+  editModal.style.display = "block";
+};
 
-  const options = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  };
+//Funcion para cerrar el modal de edición
+const closeEditModal = () => {
+  editModal.style.display = "none";
+};
 
-  const response = await requestData("/addUser", options);
-
-  if (response) {
-    showNotification("La cuenta se ha añadido correctamente.");
-    event.target.reset(); //Limpiar el formulario después de añadir el usuario
-    loadUsers(); // Recargar la lista de usuarios
-  } else {
-    showNotification(
-      "Hubo problemas al añadir la cuenta. Por favor, inténtelo de nuevo",
-      false
+//Funcion para manejar la eliminacion de un usuario
+const handleDeleteUser = async (userEmail) => {
+  const confirmDelete = confirm(
+    "¿Esta seguro de que deseas eliminar esta cuenta? Esta accion no se puede deshacer."
+  );
+  if (confirmDelete) {
+    const response = await requestData(
+      `/deleteUser/${encodeURIComponent(userEmail)}`,
+      { method: "DELETE" }
     );
+    if (response) {
+      showNotification(response.message);
+      loadUsers(); // Recargar la lista de usuarios despues de eliminar
+    } else {
+      showNotification(response.message, false);
+    }
   }
 };
 
-/**---------FUNCIONES DE MANEJO DE DATOS---------- */
+//Función para crear el botón de edición
+const createEditButton = (user) => {
+  const editButton = document.createElement("button");
+  editButton.classList.add("button", "button--edit");
+  editButton.textContent = "Editar";
+  editButton.addEventListener("click", () => openEditModal(user));
+  return editButton;
+};
+
+//Funcion para crear un botón de eliminacion de usuario
+const createDeleteButton = (userEmail) => {
+  const deleteButton = document.createElement("button");
+  deleteButton.classList.add("button", "button--delete");
+  deleteButton.textContent = "Eliminar";
+  deleteButton.addEventListener("click", () => handleDeleteUser(userEmail));
+  return deleteButton;
+};
 
 //Funcion para cargar y mostrar usuarios
 const loadUsers = async () => {
@@ -120,6 +154,54 @@ const loadUsers = async () => {
   }
 };
 
+//Funcion para añadir usuarios
+const addUser = async (event) => {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const data = {
+    email: formData.get("email"),
+    password: formData.get("password"),
+    urlPost: formData.get("urlPost"),
+    message: formData.get("message"),
+    postCount: parseInt(formData.get("postCount"), 10 || 1),
+  };
+
+  const options = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  };
+
+  const response = await requestData("/addUser", options);
+
+  if (response) {
+    showNotification("La cuenta se ha añadido correctamente.");
+    event.target.reset(); //Limpiar el formulario después de añadir el usuario
+    loadUsers(); // Recargar la lista de usuarios
+  } else {
+    showNotification(
+      "Hubo problemas al añadir la cuenta. Por favor, inténtelo de nuevo",
+      false
+    );
+  }
+};
+
+//Funcion para compartir publicaciones
+const sharePosts = async () => {
+  const options = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  };
+
+  const response = await requestData("/sharePosts", options);
+
+  if (response) {
+    showNotification("Las publicaciones se han compartido correctamente.");
+  } else {
+    showNotification("Hubo un problema al compartir las publiciones.", false);
+  }
+};
+
 //Función para editar un usuario
 const editUser = async (event) => {
   event.preventDefault();
@@ -152,94 +234,6 @@ const editUser = async (event) => {
     );
   }
 };
-
-//Funcion para cerrar el modal de edición
-const closeEditModal = () => {
-  editModal.style.display = "none";
-};
-
-//Función para crear el botón de edición
-const createEditButton = (user) => {
-  const editButton = document.createElement("button");
-  editButton.classList.add("button", "button--edit");
-  editButton.textContent = "Editar";
-  editButton.addEventListener("click", () => openEditModal(user));
-  return editButton;
-};
-
-//Funcion para abrir el modal de edicion
-const openEditModal = (user) => {
-  document.querySelector("#editEmail").value = user.email;
-  document.querySelector("#editPassword").value = user.password;
-  document.querySelector("#editUrlPost").value = user.urlPost;
-  document.querySelector("#editMessage").value = user.message;
-  document.querySelector("#editPostCount").value = user.postCount;
-  document.querySelector("#editOldEmail").value = user.email;
-  editModal.style.display = "block";
-};
-
-//Funcion para crear un botón de eliminacion de usuario
-const createDeleteButton = (userEmail) => {
-  const deleteButton = document.createElement("button");
-  deleteButton.classList.add("button", "button--delete");
-  deleteButton.textContent = "Eliminar";
-  deleteButton.addEventListener("click", () => handleDeleteUser(userEmail));
-  return deleteButton;
-};
-
-//Funcion para manejar la eliminacion de un usuario
-const handleDeleteUser = async (userEmail) => {
-  const confirmDelete = confirm(
-    "¿Esta seguro de que deseas eliminar esta cuenta? Esta accion no se puede deshacer."
-  );
-  if (confirmDelete) {
-    const response = await requestData(
-      `/deleteUser/${encodeURIComponent(userEmail)}`,
-      { method: "DELETE" }
-    );
-    if (response) {
-      showNotification(response.message);
-      loadUsers(); // Recargar la lista de usuarios despues de eliminar
-    } else {
-      showNotification(response.message, false);
-    }
-  }
-};
-
-//Funcion para alternar la visibilidad de la contraseña
-const togglePasswordVisibility = () => {
-  const passwordField = document.querySelector(".password");
-  const toggleButton = document.querySelector(".togglePassword");
-
-  if (passwordField.type === "password") {
-    passwordField.type = "text";
-    toggleButton.textContent = "Ocultar Contraseña";
-  } else {
-    passwordField.type = "password";
-    toggleButton.textContent = "Mostrar Contraseña";
-  }
-};
-
-/**---------FUNCIONES DE UI---------- */
-
-//Mostrar mensajes de notificacion
-const showNotification = (message, isSuccess = true) => {
-  const notification = document.createElement("div");
-  notification.classList.add(
-    "notification",
-    isSuccess ? "notification--success" : "notification--error"
-  );
-  const notificationText = document.createElement("p");
-  notificationText.classList.add("notification__text");
-  notificationText.textContent = message;
-  notification.appendChild(notificationText);
-  document.body.appendChild(notification);
-  setTimeout(() => {
-    notification.remove();
-  }, 4000);
-};
-
-/**---------FUNCIONES DE REPORTES---------- */
 
 //Función para abrir el modal del reporte
 const openReportModal = async () => {
@@ -322,13 +316,13 @@ const cargarEventListeners = () => {
   //Dispara cuando se hace click en añadir cuenta
   automationForm.addEventListener("submit", addUser);
 
-  //Dispara cuando se hace click en share posts
-  sharePostsButton.addEventListener("click", sharePosts);
-
   //Toggle button para contraseñas
   document
     .querySelector(".togglePassword")
     .addEventListener("click", togglePasswordVisibility);
+
+  //Dispara cuando se hace click en share posts
+  sharePostsButton.addEventListener("click", sharePosts);
 
   //Se dispara cuando se hace click en el boton "Guardar Cambios"
   editForm.addEventListener("submit", editUser);
