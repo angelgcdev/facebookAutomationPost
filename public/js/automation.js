@@ -65,6 +65,7 @@ const openEditModal = (user) => {
   document.querySelector("#editUrlPost").value = user.urlPost;
   document.querySelector("#editMessage").value = user.message;
   document.querySelector("#editPostCount").value = user.postCount;
+  document.querySelector("#editPostInterval").value = user.postInterval;
   document.querySelector("#editOldEmail").value = user.email;
   editModal.style.display = "block";
 };
@@ -138,6 +139,11 @@ const loadUsers = async () => {
       postsSpan.textContent = `Publicaciones Programadas: ${user.postCount}`;
       listItem.appendChild(postsSpan);
 
+      const intervalSpan = document.createElement("span");
+      intervalSpan.classList.add("user-list__item-posts", "user-list__span");
+      intervalSpan.textContent = `Una publicacion cada: ${user.postInterval} minutos`;
+      listItem.appendChild(intervalSpan);
+
       listItem.appendChild(createEditButton(user));
       listItem.appendChild(createDeleteButton(user.email));
 
@@ -163,7 +169,8 @@ const addUser = async (event) => {
     password: formData.get("password"),
     urlPost: formData.get("urlPost"),
     message: formData.get("message"),
-    postCount: parseInt(formData.get("postCount"), 10 || 1),
+    postCount: parseInt(formData.get("postCount"), 10) || 1,
+    postInterval: parseInt(formData.get("postInterval"), 10) || 1,
   };
 
   const options = {
@@ -212,6 +219,7 @@ const editUser = async (event) => {
     urlPost: formData.get("urlPost"),
     message: formData.get("message"),
     postCount: parseInt(formData.get("postCount"), 10) || 1,
+    postInterval: parseInt(formData.get("postInterval"), 10) || 1,
     oldEmail: formData.get("oldEmail"),
   };
 

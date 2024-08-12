@@ -62,39 +62,42 @@ const automatizarFacebook = async (user) => {
 
     // Navegar al enlace del post de una página
     await page.goto(user.urlPost);
+    await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
 
     //Verificar si ya se dio me gusta
-    // Definir selectores de botones
-    const likedButton1 = 'div[aria-label="Eliminar Me gusta"]';
-    const likedButton2 = 'div[aria-label="Me gusta activo"]';
-    const defaultLikeButton = 'div[aria-label="Me gusta"]';
+    const likeButtonSelector = 'div[aria-label="Me gusta"]';
 
-    // Esperar a que aparezca uno de los selectores o un timeout
-    const firstSelectorLiked = await Promise.race([
-      page.waitForSelector(likedButton1, { timeout: 10000 }).catch(() => null),
-      page.waitForSelector(likedButton2, { timeout: 10000 }).catch(() => null),
-    ]);
+    try {
+      //Esperar a que el boton este presente
+      await page.waitForSelector(likeButtonSelector, { timeout: 10000 });
 
-    // Determinar si se encontró alguno de los botones
-    const isLiked = await page.evaluate((selector) => {
-      const button = document.querySelector(selector);
-      return (
-        button && button.getAttribute("aria-label") === "Eliminar Me gusta"
+      //Evalua el aria-label del boton
+      const isLiked = await page.evaluate((selector) => {
+        const button = document.querySelector(selector);
+        if (button) {
+          const ariaLabel = button.getAttribute("aria-label");
+          //Compara el valor de aria-label
+          return ariaLabel !== "Me gusta";
+        }
+        return false;
+      }, likeButtonSelector);
+
+      if (!isLiked) {
+        await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
+        await clickOnSelector(page, likeButtonSelector);
+      } else {
+        console.log("Me gusta esta activado");
+      }
+    } catch (error) {
+      console.log(
+        'El boton "Me gusta" no se encontro o se produjo un error:',
+        error
       );
-    }, firstSelectorLiked || defaultLikeButton);
-
-    // Si no se ha encontrado el botón "Me gusta" en estado activo
-    if (!isLiked) {
-      // Darle me gusta a la publicación
-      await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
-      await clickOnSelector(page, defaultLikeButton);
-    } else {
-      console.log("El botón 'Me gusta' ya está activado");
     }
 
     // Publicar en los primeros tres grupos
     for (let i = 1; i <= user.postCount; i++) {
-      await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
+      await page.waitForTimeout(user.postInterval * 60000 || 60000); //intervalo de tiempo entre publicaciones
 
       //Botón Compartir
       const selector1 =
