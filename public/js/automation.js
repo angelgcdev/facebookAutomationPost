@@ -1,4 +1,6 @@
 /**---------VARIABLES---------- */
+const loadingElement = document.querySelector("#loading");
+
 const automationForm = document.querySelector("#automationForm");
 const sharePostsButton = document.querySelector("#sharePostsButton");
 
@@ -9,6 +11,14 @@ const closeModal = document.querySelector("#closeModal");
 const editForm = document.querySelector("#editForm");
 
 /**---------FUNCIONES---------- */
+//Funcion para mostrar la animacion de carga
+const showLoading = () => {
+  loadingElement.classList.remove("hidden");
+};
+
+const hideLoading = () => {
+  loadingElement.classList.add("hidden");
+};
 
 //Funcion para alternar la visibilidad de la contraseña
 const togglePasswordVisibility = () => {
@@ -195,17 +205,25 @@ const addUser = async (event) => {
 
 //Funcion para compartir publicaciones
 const sharePosts = async () => {
+  showLoading(); //Muestra la animacion de carga
+
   const options = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
   };
 
-  const response = await requestData("/sharePosts", options);
+  try {
+    const response = await requestData("/sharePosts", options);
 
-  if (response) {
-    showNotification("Las publicaciones se han compartido correctamente.");
-  } else {
+    if (response) {
+      showNotification("Las publicaciones se han compartido correctamente.");
+    } else {
+      showNotification("Hubo un problema al compartir las publiciones.", false);
+    }
+  } catch (error) {
     showNotification("Hubo un problema al compartir las publiciones.", false);
+  } finally {
+    hideLoading(); //Oculta la animacion de carga
   }
 };
 

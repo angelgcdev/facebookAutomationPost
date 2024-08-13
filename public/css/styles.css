@@ -62,6 +62,48 @@ li {
   --smaller: 1.2rem;
 }
 
+/* Estilos para la animacion de carga */
+
+.loading__container {
+  border-radius: 1rem;
+  position: fixed;
+  right: 3.2rem;
+  bottom: 3.2rem;
+  width: 12rem;
+  height: 12rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading__text {
+  color: var(--white);
+  line-height: 1.6;
+  letter-spacing: 0.1rem;
+}
+
+.loading__spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 6rem;
+  height: 6rem;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /*----Estilos para la pagina web ---*/
 
 /*Estilos para el form-container*/
@@ -561,4 +603,9 @@ li {
   .form-container {
     margin: initial;
   }
+}
+
+/* Clase auxiliar para ocultar elementos */
+.hidden {
+  display: none;
 }
