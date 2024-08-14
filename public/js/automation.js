@@ -180,7 +180,7 @@ const addUser = async (event) => {
     urlPost: formData.get("urlPost"),
     message: formData.get("message"),
     postCount: parseInt(formData.get("postCount"), 10) || 1,
-    postInterval: parseInt(formData.get("postInterval"), 10) || 1,
+    postInterval: parseInt(formData.get("postInterval"), 10) || 0,
   };
 
   const options = {
@@ -224,6 +224,7 @@ const sharePosts = async () => {
     showNotification("Hubo un problema al compartir las publiciones.", false);
   } finally {
     hideLoading(); //Oculta la animacion de carga
+    openReportModal(); //Muestra el reporte al finalizar
   }
 };
 
@@ -237,7 +238,7 @@ const editUser = async (event) => {
     urlPost: formData.get("urlPost"),
     message: formData.get("message"),
     postCount: parseInt(formData.get("postCount"), 10) || 1,
-    postInterval: parseInt(formData.get("postInterval"), 10) || 1,
+    postInterval: parseInt(formData.get("postInterval"), 10) || 0,
     oldEmail: formData.get("oldEmail"),
   };
 

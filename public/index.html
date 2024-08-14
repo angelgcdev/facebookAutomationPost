@@ -19,7 +19,7 @@
   <body>
     <!-- Contenedor para la animacion de carga -->
     <div id="loading" class="loading__container hidden">
-      <p class="loading__text">Publicando...</p>
+      <p id="loading__text" class="loading__text">Publicando...</p>
       <div class="loading__spinner"></div>
     </div>
 
@@ -98,7 +98,7 @@
                 name="postInterval"
                 placeholder="Intervalo entre publicaciones (minutos)"
                 required
-                min="1"
+                min="0"
               />
             </div>
             <button class="button button--add" type="submit">
@@ -210,7 +210,7 @@
               name="postInterval"
               placeholder="Intervalo entre publicaciones (minutos)"
               required
-              min="1"
+              min="0"
             />
           </div>
 
