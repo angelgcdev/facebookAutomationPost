@@ -1,3 +1,5 @@
+// src/facebookAutomation.js
+
 const { chromium } = require("playwright");
 const fs = require("fs/promises");
 const path = require("path");
@@ -97,7 +99,7 @@ const automatizarFacebook = async (user) => {
 
     // Publicar en los primeros tres grupos
     for (let i = 1; i <= user.postCount; i++) {
-      await page.waitForTimeout(user.postInterval * 60000 || 60000); //intervalo de tiempo entre publicaciones
+      await page.waitForTimeout(user.postInterval * 60000); //intervalo de tiempo entre publicaciones
 
       //Botón Compartir
       const selector1 =
@@ -121,9 +123,34 @@ const automatizarFacebook = async (user) => {
         throw new Error("Ningún selector se resolvió a tiempo.");
       }
 
-      await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
-      //Click en el boton 'Grupo'
-      await clickOnSelector(page, 'div[role="button"] span:has-text("Grupo")');
+      try {
+        await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
+        //Click en el boton 'Grupo'
+        await clickOnSelector(
+          page,
+          'div[role="button"] span:has-text("Grupo")'
+        );
+      } catch (error) {
+        console.error(error);
+      }
+
+      //-----------------Opcion auxiliar-------------------------------
+      try {
+        await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
+        await clickOnSelector(
+          page,
+          'div[role="button"] span:has-text("Más opciones")'
+        );
+
+        await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
+        await clickOnSelector(
+          page,
+          'div[role="button"] span:has-text("Compartir en un grupo")'
+        );
+      } catch (error) {
+        console.error(error);
+      }
+      //--------------------------------------------------------------------
 
       await page.waitForTimeout(getRandomDelay(MIN_DELAY, MAX_DELAY));
       await page.waitForSelector('div[role="list"]');
